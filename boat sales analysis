@@ -1,0 +1,541 @@
+select *
+from cousera..boat_data$
+
+select count(*)
+from cousera..boat_data$
+
+select top (5) [Number of views last 7 days]
+from cousera..boat_data$
+order by [Number of views last 7 days] desc
+
+---DATA CLEANING---
+
+---the price field has nvarchar data type which prevents computation, so two columns have to be created, one is for EURO currency 
+----and another as boat price for computation
+
+select price, currency, [boat price]
+from cousera..boat_data$
+
+---update currency field
+update cousera..boat_data$ set Currency = 'EUR'
+where Price like 'EUR %'
+
+update cousera..boat_data$ set Currency = 'EUR'
+where Price like 'CHF %'
+
+update cousera..boat_data$ set Currency = 'EUR'
+where Price like 'DKK %'
+
+update cousera..boat_data$ set Currency = 'EUR'
+where Price like 'Â£ %'
+
+----updating boat price field
+
+update cousera..boat_data$ set [Boat Price] = cast (RIGHT(price, len(price) - CHARINDEX(' ',price)) as numeric) * 1.17
+where Price like 'Â£ %'
+
+update cousera..boat_data$ set [Boat Price] = cast (RIGHT(price, len(price) - CHARINDEX(' ',price)) as numeric)
+where Price like 'EUR%'
+
+update cousera..boat_data$ set [Boat Price] = cast (RIGHT(price, len(price) - CHARINDEX(' ',price)) as numeric) * 0.13
+where Price like 'DKK%'
+
+update cousera..boat_data$ set [Boat Price] = cast (RIGHT(price, len(price) - CHARINDEX(' ',price)) as numeric) * 1.02
+where Price like 'CHF%'
+
+-----the type column can be splited into two columns (boat condition and engine type) for in detail analysis
+
+select type,Engine_type
+from cousera..boat_data$
+
+---update boat_condition field
+update cousera..boat_data$ set Boat_condition = 'new boat'
+where type like 'new_%' 
+
+update cousera..boat_data$ set Boat_condition = 'used boat'
+where type like 'used_%' 
+
+update cousera..boat_data$ set Boat_condition = 'display'
+where type like 'display_%'  
+    
+----update engine_type field
+
+update cousera..boat_data$ set Engine_type = 'hybrid'
+where type like '%_hybrid'
+
+update cousera..boat_data$ set Engine_type = 'unleaded'
+where type like '%_unleaded'
+
+update cousera..boat_data$ set Engine_type = 'diesel'	
+where type like '%_diesel'	
+
+update cousera..boat_data$ set Engine_type = 'propane'	
+where type like '%_propane'	
+
+update cousera..boat_data$ set Engine_type = 'gas'	
+where type like '%_gas'
+
+update cousera..boat_data$ set Engine_type = 'electric'	
+where type like '%_electric'
+
+update cousera..boat_data$ set Engine_type = 'electric'	
+where type like 'electric'
+
+update cousera..boat_data$ set Engine_type = 'diesel'	
+where type like 'diesel'
+
+update cousera..boat_data$ set Engine_type = 'unleaded'	
+where type like 'unleaded'
+
+----cells with NULL are boat types with no engine type data
+	
+---location field has to be cleaned to obtain countries names------
+
+select location
+from cousera..boat_data$
+
+----update location values to obtain countries names by using the left function and filtering values (string) if it contains '%Â»%'----
+
+update  cousera..boat_data$ set location = left(Location,CHARINDEX(' Â»',Location))
+where location like '%Â»%' 
+
+---still the names are not clear, some show cities, some have special characters, some have incorrect names---
+----each single value have to be changed to its correct country name---
+
+---BelgiÃ«, Zulte = Belgium	
+update cousera..boat_data$ set location = 'Belgium' 
+where location like 'BelgiÃ«, Zulte%'
+
+----24782 BÃ¼delsdorf = switzerland
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like '24782 BÃ¼delsdorf%'
+
+---83278 Traunstein = austria
+update cousera..boat_data$ set location = 'Austria' 
+where location like '83278 Traunstein%'
+
+----Berlin Wannsee = germany 
+update cousera..boat_data$ set location = 'Germany' 
+where location like 'Berlin Wannsee%'
+
+----Bielefeld = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like 'Bielefeld%'
+
+----bodensee = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like 'bodensee%'
+
+-----Brandenburg = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like 'Brandenburg%'
+
+---Brandenburg an derHavel = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'Brandenburg an derHavel%'
+
+----Bremen = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'Bremen%'
+
+---Calanova Mallorca = spain
+update cousera..boat_data$ set location = 'Spain' 
+where location like'Calanova Mallorca%'
+
+---Croatia (Hrvatska) = croatia
+update cousera..boat_data$ set location = 'Croatia' 
+where location like'Croatia (Hrvatska)%'
+
+----Dalmatien = croatia
+update cousera..boat_data$ set location = 'Croatia' 
+where location like'Dalmatien%'
+
+ ----espa?a = spain
+update cousera..boat_data$ set location = 'Spain' 
+where location like'espa?a%'
+
+---Faoug = switzerland
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like'Faoug%'
+
+---French = france
+update cousera..boat_data$ set location = 'France' 
+where location like'French%'
+
+---Gibraltar=british
+update cousera..boat_data$ set location = 'British' 
+where location like'Gibraltar%'
+
+---Greetsile/ KrummhÃ¶rn = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'Greetsile/ KrummhÃ¶rn%'
+
+----Heilbronn = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'Heilbronn%'
+
+--Isle = ireland
+update cousera..boat_data$ set location = 'Ireland' 
+where location like'Isle%'
+
+---Italie = italy
+update cousera..boat_data$ set location = 'Italy' 
+where location like'Italie%'
+
+---Italien = italy
+update cousera..boat_data$ set location = 'Italy' 
+where location like'Italien%'
+
+----Jersey = united kingdom
+update cousera..boat_data$ set location = 'United Kingdom' 
+where location like'Jersey%'
+
+---Juelsminde Havn = denmark
+update cousera..boat_data$ set location = 'Denmark' 
+where location like'Juelsminde Havn%'
+
+---Katwijk = netherlands
+update cousera..boat_data$ set location = 'Netherlands' 
+where location like'Katwijk%'
+
+---Kroatien Krk = croatia
+update cousera..boat_data$ set location = 'Croatia' 
+where location like'Kroatien Krk%'
+
+---Lago = italy
+update cousera..boat_data$ set location = 'Italy' 
+where location like'Lago%'
+
+---Lago di Garda = italy
+update cousera..boat_data$ set location = 'Italy' 
+where location like'Lago di Garda%'
+
+---lago maggiore = italy
+update cousera..boat_data$ set location = 'Italy' 
+where location like'lago maggiore%'
+
+---Lago Maggiore, Minusio = switzerland
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like'Lago Maggiore, Minusio%'
+
+---Lake = italy
+update cousera..boat_data$ set location = 'Italy' 
+where location like'Lake%'
+
+---Lommel = belgium
+update cousera..boat_data$ set location = 'Belgium' 
+where location like'Lommel%'
+
+---Mallorca = spain
+update cousera..boat_data$ set location = 'Spain' 
+where location like'Mallorca%'
+
+---Marina Punat=croatia
+update cousera..boat_data$ set location = 'Croatia' 
+where location like'Marina Punat%'
+
+--Martinique = france
+update cousera..boat_data$ set location = 'France' 
+where location like'Martinique%'
+
+---Neusiedl am See=austria
+update cousera..boat_data$ set location = 'Austria' 
+where location like'Neusiedl am See%'
+
+--Neustadt in Holstein (Ostsee)=germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'Neustadt in Holstein (Ostsee)%'
+
+---Niederrhein=germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'Niederrhein%'
+
+---NordseekÃ¼ste=germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'NordseekÃ¼ste%'
+
+---Novi Vinodolski =croatia
+update cousera..boat_data$ set location = 'Croatia' 
+where location like'Novi Vinodolski%'
+
+---Oder = poland
+update cousera..boat_data$ set location = 'Poland' 
+where location like'Oder%'
+
+---Opwijk = belgium
+update cousera..boat_data$ set location = 'Belgium' 
+where location like'Opwijk%'
+
+---Ostsee = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'Ostsee%'
+
+----Porto Rotondo = italy
+update cousera..boat_data$ set location = 'Italy' 
+where location like'Porto Rotondo%'
+
+---PT Ã¸stkysten ellers Esbjerg = denmark
+update cousera..boat_data$ set location = 'Denmark' 
+where location like'PT Ã¸stkysten ellers Esbjerg%'
+
+---Rheinfelden=switzerland
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like'Rheinfelden%'
+
+---Rolle=switzerland
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like'Rolle%'
+
+----Rostock = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'Rostock%'
+
+---Rovinij=croatia
+update cousera..boat_data$ set location = 'Croatia' 
+where location like'Rovinij%'
+
+---Russian =russia
+update cousera..boat_data$ set location = 'Russia' 
+where location like'Russian%'
+
+----Slovak =slovakia
+update cousera..boat_data$ set location = 'Slovakia' 
+where location like'Slovak%'
+
+---Split=croatia
+update cousera..boat_data$ set location = 'Croatia' 
+where location like'Split%'
+
+---Steinwiesen=germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'Steinwiesen%'
+
+----Stralsund =germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'Stralsund%'
+
+---Tenero, lago Maggiore =switzerland
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like'Tenero, lago Maggiore%'
+
+---Thalwil= switzerland
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like'Thalwil%'
+
+---Thun=switzerland
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like'Thun%'
+
+---Toscana=united states
+update cousera..boat_data$ set location = 'United States' 
+where location like'Toscana%'
+
+ ---VierwaldstÃ¤ttersee - Buochs= switzerland
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like'VierwaldstÃ¤ttersee - Buochs%'
+
+---Welschenrohr = switzerland
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like'Welschenrohr%'
+
+---Wijdenes= netherlands
+update cousera..boat_data$ set location = 'Netherlands' 
+where location like'Wijdenes%'
+
+---ZÃ¼richse, 8855 Wangen SZ = switzerland
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like'ZÃ¼richse, 8855 Wangen SZ%'
+
+---Zevenbergen = netherlands
+update cousera..boat_data$ set location = 'Netherlands' 
+where location like'Zevenbergen%'
+
+----FuÃach = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'FuÃach%'
+
+----Donau=germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'Donau%'
+
+--Izola=slovenia
+update cousera..boat_data$ set location = 'Slovenia' 
+where location like'Izola%'
+
+----waren mÃ¼ritz = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'waren mÃ¼ritz%'
+
+----TravemÃ¼nde = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'TravemÃ¼nde%'
+
+---RÃ¼gen = germany
+update cousera..boat_data$ set location = 'Germany' 
+where location like'RÃ¼gen%'
+
+update cousera..boat_data$ set location = 'Germany' 
+where location like 'baden baden%'
+
+update cousera..boat_data$ set location = 'Switzerland' 
+where location like 'Avenches%'
+
+update cousera..boat_data$ set location = 'France' 
+where location like 'annecy%'
+
+update cousera..boat_data$ set location = 'Germany' 
+where location like 'Barssel%'
+
+update cousera..boat_data$ set location = 'Germany' 
+where location like 'Beilngries%'
+
+update cousera..boat_data$ set location = 'Germany' 
+where location like 'Angera %'
+
+update cousera..boat_data$ set location = 'Italy' 
+where location like 'Adria%'
+
+----dropping two columns to get a clean table
+
+alter table cousera..boat_data$
+drop column price, type
+
+select *
+from cousera..boat_data$
+
+----EXPLORATORY ANALYSIS-----
+----PRICE CATEGORIES AND AVERAGE VIEWERS-----
+----used quantiles to make three quaters for expensive, moderate and cheap boat prices---
+
+select price_category, round(avg([Number of views last 7 days]),2) as avg_views
+from	(select [Number of views last 7 days] ,case 
+		when [Boat Price] > 245000 then 'expensive'
+		when [Boat Price] < 245000 and [Boat Price] > 42950 then 'moderate'
+		else 'cheap'
+		end as price_category
+		from cousera..boat_data$) as price
+group by price_category
+order by avg_views desc
+
+----boat types viewers----
+----a boat type is defined according to the boat features and one boat can have more than two features, so their is no common feature that distinguish boats
+----the data in boat type field will be analysed as it is
+
+select [Boat Type],round(avg([Number of views last 7 days]),2) as avg_views
+from cousera..boat_data$
+group by [Boat Type]
+order by avg_views desc
+
+---boat condition viewers----
+
+select Boat_condition, round(avg([Number of views last 7 days]),2) as avg_views
+from cousera..boat_data$
+where Boat_condition != 'display' and Boat_condition is not null
+group by Boat_condition
+order by avg_views desc
+
+----boat engine type viewers------
+
+select Engine_type, round(avg([Number of views last 7 days]),2) as avg_viewers
+from cousera..boat_data$
+where Engine_type is not null
+group by Engine_type
+order by avg_viewers desc
+
+-----year built  viewers-----
+-----used quantiles to partition data in three quaters----
+
+select year_built,round(avg([Number of views last 7 days]),2) as avg_viewers
+from 
+	(select [Number of views last 7 days],
+	case 
+		when [year built] < 1999 then 'very old'
+		when [year built] > 1999 and [year built] < 2018 then 'old'
+		else 'new'
+		end as year_built
+	from cousera..boat_data$
+	where [year built] != 0) as years
+group by year_built
+order by avg_viewers desc
+
+----boat size viewers-----
+----used quantiles to partition data into three quaters---
+
+select size_in_msquare, round(avg([Number of views last 7 days]),2) as avg_viewers
+from 
+	(select [Number of views last 7 days],
+	case
+		when (length * width) > 58.99 then 'large'
+		when (length * width) > 18.87 and (length * width) < 58.99 then 'medium'
+		else 'small' 
+		end as size_in_msquare
+	from cousera..boat_data$
+	where (length * width) is not null) as size
+group by size_in_msquare
+order by avg_viewers desc
+
+-----boat material viewers-----
+
+select material, round(avg([Number of views last 7 days]),2) as avg_views
+from cousera..boat_data$
+where Material is not null 
+group by Material
+order by avg_views desc
+
+-----country and engine type----
+
+select Location,Engine_type,[Number of views last 7 days]
+from cousera..boat_data$
+order by [Number of views last 7 days] desc
+
+---country and condition----
+
+select Location, Boat_condition, [Number of views last 7 days] 
+from cousera..boat_data$
+order by [Number of views last 7 days] desc
+
+-----country and boat type---
+
+select Location,[Boat Type], [Number of views last 7 days]
+from cousera..boat_data$
+ 
+-----country and material----
+
+select Location, material,[Number of views last 7 days]
+from cousera..boat_data$
+
+----country and size-----
+
+select location,size_in_msquare, [Number of views last 7 days]
+from 
+	(select location, [Number of views last 7 days],
+	case
+		when (length * width) > 58.99 then 'large'
+		when (length * width) > 18.87 and (length * width) < 58.99 then 'medium'
+		else 'small' 
+		end as size_in_msquare
+	from cousera..boat_data$
+	where (length * width) is not null) as size
+
+---------country and year built-----
+
+select Location,year_built,[Number of views last 7 days]
+from 
+	(select location,[Number of views last 7 days],
+	case 
+		when [year built] < 1999 then 'very old'
+		when [year built] > 1999 and [year built] < 2018 then 'old'
+		else 'new'
+		end as year_built
+	from cousera..boat_data$
+	where [year built] != 0) as years
+
+-----country and boat price
+
+select location, price_category, [Number of views last 7 days]
+from (select Location,[Number of views last 7 days] ,case 
+		when [Boat Price] > 245000 then 'expensive'
+		when [Boat Price] < 245000 and [Boat Price] > 42950 then 'moderate'
+		else 'cheap'
+		end as price_category
+		from cousera..boat_data$) as country_price
